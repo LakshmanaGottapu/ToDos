@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <center>
+        <form id="todo-form">
+            <input id="todo-input" type="text" placeholder="enter the todo here.."/>
+            <button type="submit">add</button>
+        </form> 
+        <!-- <form id="all-todos">
+            <button type="submit" id="submit-button">All Todos</button>
+        </form> -->
+        <div id="display-todos">
+
+        </div>
+    </center>
+</body>
+</html>
+<script type="text/javascript">
+    const displayElement = document.getElementById("display-todos");
+    //const allTodosEL = document.getElementById("all-todos");
+    const formElement =  document.getElementById("todo-form");
+    const inputElement = document.getElementById("todo-input");
+    formElement.addEventListener("submit",(e)=>{
+        e.preventDefault();
+        const data = inputElement.value;
+        fetch("http://localhost:4500/todos/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({todo:data})  
+        })
+        .then(response=>response.json())
+        .then(displayAppender)
+        formElement.reset();
+    })
+    // allTodosEL.addEventListener("submit", (e)=>{
+    //     e.preventDefault();
+    //     fetch("http://localhost:4500/todos")
+    //     .then(response=>response.json())
+    //     .then(data=>{
+    //         data.map(node=>{
+    //             const newEl = document.createElement("div");
+    //             newEl.setAttribute('key',node["_id"]);
+    //             const childEl = document.createElement("input");
+    //             childEl.value = node.todo;
+    //             childEl.setAttribute('readonly',true);
+    //             newEl.appendChild(childEl);
+    //             displayElement.appendChild(newEl);
+    //         })
+    //     })
+    //     document.getElementById("submit-button").disabled = true;
+    // })
+    
+    document.addEventListener("DOMContentLoaded",(e)=>{
+        fetch("http://localhost:4500/todos/")
+        .then(response=>response.json())
+        .then(data=>{
+            data.map(displayAppender)
+        })
+    })
+    function displayAppender(node){
+        const newEl = document.createElement("div");
+                newEl.setAttribute('key',node["_id"]);
+                const childEl = document.createElement("input");
+                childEl.value = node.todo;
+                childEl.setAttribute('readonly',true);
+                newEl.appendChild(childEl);
+                displayElement.appendChild(newEl);
+    }
+</script>
